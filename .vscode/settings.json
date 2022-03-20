@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "sdl.h": "c",
+        "sdl_main.h": "c",
+        "begin_code.h": "c",
+        "stdlib.h": "c"
+    },
+    "C_Cpp.default.includePath": [
+        "./include",
+        "/usr/include/SDL2/",
+    ],
+    "C_Cpp.default.systemIncludePath": [
+        "/usr/include",
+        " /usr/include/x86_64-linux-gnu",
+        " /usr/local/include",
+        " /usr/lib/gcc/x86_64-linux-gnu/9/include"
+    ]
+}
