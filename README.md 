@@ -1,0 +1,5 @@
+
+
+Git:
+    When you need to set up git, create a personnal token (Github -> Settings -> <>Dev tools -> Personnal token)
+    Then run git remote set-url origin https://<TOKEN>@github.com/ElBrazilian/Mario.git

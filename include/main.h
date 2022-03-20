@@ -14,8 +14,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
-#define WIDTH 900
-#define HEIGHT 600
+#include <SDL2/SDL.h>
+
+#include "game.h"
+
+#define WIDTH 1280
+#define HEIGHT 720
+
+#define MAX_TITLE_LENGTH 200
+
+typedef struct {
+    int rendererFlags;
+    int windowFlags;
+    char windowTitle[MAX_TITLE_LENGTH];
+
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+
+} App;
 
 #endif
