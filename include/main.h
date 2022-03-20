@@ -19,20 +19,19 @@
 #include <SDL2/SDL.h>
 
 #include "game.h"
+#include "app.h"
 
-#define WIDTH 1280
-#define HEIGHT 720
 
-#define MAX_TITLE_LENGTH 200
-
-typedef struct {
-    int rendererFlags;
-    int windowFlags;
-    char windowTitle[MAX_TITLE_LENGTH];
-
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-
-} App;
-
+/**
+ * @brief Initializes the app object and the SDL
+ * 
+ * @param app 
+ */
+void initialize_app(App *app);
+/**
+ * @brief Destroys the app and the SDL
+ * 
+ * @param app 
+ */
+void destroy_app(App *app);
 #endif

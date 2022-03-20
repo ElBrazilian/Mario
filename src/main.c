@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define TARGET_FPS 60
+
 
 void initialize_app(App *app){
     // Initialize SDL
@@ -9,7 +11,7 @@ void initialize_app(App *app){
     }
 
     // Create the window
-    app->window = SDL_CreateWindow(app->windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, app->windowFlags);
+    app->window = SDL_CreateWindow(app->windowTitle, 2000, 0, WIDTH, HEIGHT, app->windowFlags);
     if (!app->window){
         printf("Failed to open the window: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
@@ -22,7 +24,19 @@ void initialize_app(App *app){
         exit(EXIT_FAILURE);
     }
 
+    // Create the timekeeper object
+    app->keeper = create_timekeeper(TARGET_FPS);
 
+    app->continuer = true;
+}
+
+void destroy_app(App *app){
+    destroy_timekeeper(app->keeper);
+
+    SDL_DestroyRenderer(app->renderer);
+    SDL_DestroyWindow(app->window);
+    SDL_Quit();
+    free(app);
 }
 
 int main(int argc, char *argv[]){
@@ -34,12 +48,28 @@ int main(int argc, char *argv[]){
 
     initialize_app(app);
 
+    while(app->continuer){
+        // HANDLING EVENTS
+        handle_events(app);
+        update_timekeeper_handle(app->keeper);
+
+        // UPDATE 
+        update(app);
+        update_timekeeper_update(app->keeper);
+
+        // DRAW
+        draw(app);
+        update_timekeeper_draw(app->keeper);
+
+        // DELAY TO STAY AT TARGET FPS
+        timekeeper_limit(app->keeper);
+        timekeeper_computeFPS(app->keeper);
+
+        printf("FPS: %f\n", app->keeper->currentFPS);
+    }
 
 
-    // free
-    SDL_DestroyRenderer(app->renderer);
-    SDL_DestroyWindow(app->window);
-    SDL_Quit();
-    free(app);
+    // Destroy everything
+    destroy_app(app);
     return 0;
 }

@@ -12,7 +12,13 @@
 #define GAME_H
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
+#include "app.h"
+
+void update(App *app);
+void handle_events(App *app);
+void draw(App *app);
 
 #endif

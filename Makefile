@@ -16,9 +16,15 @@ clean:
 %.o: ./src/%.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
+%.o: ./tests/%.c
+	$(CC) $(CFLAGS) -o $@ -c $^
 
-main: main.o game.o 
-	$(CC) $(CFLAGS) -o$@ $^ $(LDFLAGS)
+
+main: main.o game.o timekeeper.o 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 run: main
 	./main
+
+test-timekeeper: test_timekeeper.o timekeeper.o 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
