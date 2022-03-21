@@ -3,7 +3,7 @@ _DEBUG = $(if $(DEBUG),-D DEBUG,)
 _OPT = $(if $(OPT),-O3 -flto,)
 CC = gcc
 CFLAGS = -g -std=c99 -Wall $(_OPT) $(_GUI) $(_DEBUG) -I./include 
-LDFLAGS = `sdl2-config --cflags --libs` #-lSDL -lm
+LDFLAGS = -lSDL2 -lSDL2_ttf -lm
 
 .PHONY: clean doc check-syntax compile-all launch-tests
 

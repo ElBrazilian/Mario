@@ -12,8 +12,10 @@
 #define TIME_KEEPER_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #define FPS_NUM_AVERAGES 200
+#define FPS_NUM_AVERAGES_FL 200.0
 
 typedef struct {
     double targetFPS;
@@ -83,7 +85,13 @@ void timekeeper_limit(TimeKeeper *keeper);
  * @param keeper 
  */
 void timekeeper_computeFPS(TimeKeeper *keeper);
-
+/**
+ * @brief Draw informations on FPS and the time taken for the different operations
+ * 
+ * @param keeper 
+ * @param renderer 
+ */
+void timekeeper_draw_debug_info(TimeKeeper *keeper, SDL_Renderer *renderer, TTF_Font *font);
 /**
  * @brief Destroys the timekeeper object
  * 

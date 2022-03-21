@@ -27,6 +27,11 @@ void initialize_app(App *app){
     // Create the timekeeper object
     app->keeper = create_timekeeper(TARGET_FPS);
 
+    // Load the debug font and init TTF
+    TTF_Init();
+    app->debug_font = TTF_OpenFont("fonts/SpaceMono-Regular.ttf", DEBUG_FONT_SIZE);
+
+
     app->continuer = true;
 }
 
@@ -35,6 +40,7 @@ void destroy_app(App *app){
 
     SDL_DestroyRenderer(app->renderer);
     SDL_DestroyWindow(app->window);
+    TTF_Quit();
     SDL_Quit();
     free(app);
 }
@@ -58,14 +64,19 @@ int main(int argc, char *argv[]){
         update_timekeeper_update(app->keeper);
 
         // DRAW
+        SDL_SetRenderDrawColor(app->renderer, 0,0,0,255);
+        SDL_RenderClear(app->renderer);
+        timekeeper_draw_debug_info(app->keeper, app->renderer, app->debug_font);
         draw(app);
+        SDL_RenderPresent(app->renderer);
         update_timekeeper_draw(app->keeper);
+
 
         // DELAY TO STAY AT TARGET FPS
         timekeeper_limit(app->keeper);
         timekeeper_computeFPS(app->keeper);
 
-        printf("FPS: %f\n", app->keeper->currentFPS);
+        //printf("FPS: %f\n", app->keeper->currentFPS);
     }
 
 

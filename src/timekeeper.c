@@ -70,6 +70,57 @@ void timekeeper_computeFPS(TimeKeeper *keeper){
     keeper->currentFPS = 1000. * FPS_NUM_AVERAGES / ((int) keeper->last_frame_lengths_sum);
     keeper->last_frame_ticks = now;
 }
+
+void _timekeeper_draw_debug_step(int *y, SDL_Renderer *renderer, TTF_Font *font, char text[], SDL_Color fg, SDL_Color bg){
+    SDL_Surface *surface = TTF_RenderText_Shaded(font, text, fg, bg);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    int w = 0;
+    int h = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+    SDL_Rect dest_rect = {0,*y,w,h};
+	
+    SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
+    //SDL_RenderPresent(renderer);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+
+    *y += h;
+}
+void _timekeeper_custom_format(char out_text[], char start_text[], Uint32 ms){
+    if ((int)(ms) < 10) sprintf(out_text, " %s %d ", start_text, ms);
+    else sprintf(out_text, " %s%d ", start_text, ms);
+}
+void timekeeper_draw_debug_info(TimeKeeper *keeper, SDL_Renderer *renderer, TTF_Font *font){
+    // Colors
+    SDL_Color white = {255,255,255};
+    SDL_Color green = {99, 152, 53};
+    SDL_Color autre = {192, 178, 34};
+    SDL_Color blue  = {72, 148, 151};
+    SDL_Color red   = {187, 40, 30};
+    SDL_Color purple = {127, 102, 133};
+    
+    // Strings
+    char frame_text[20];
+    char update_text[20];
+    char draw_text[20];
+    char handle_text[20];
+    char fps_text[20];
+    _timekeeper_custom_format(frame_text,   "FRAME  : "  ,keeper->frame_length_raw);
+    _timekeeper_custom_format(update_text,  "TIME   : "  ,keeper->update_time);
+    _timekeeper_custom_format(draw_text,    "RENDER : "  ,keeper->draw_time);
+    _timekeeper_custom_format(handle_text,  "HANDLE : "  ,keeper->handle_events_time);
+    _timekeeper_custom_format(fps_text,     "FPS    : "  ,(Uint32)keeper->currentFPS);
+
+    // Drawing
+    int y = 0;
+    _timekeeper_draw_debug_step(&y, renderer, font, fps_text, white, autre);
+    _timekeeper_draw_debug_step(&y, renderer, font, frame_text, white, green);
+    _timekeeper_draw_debug_step(&y, renderer, font, handle_text, white, blue);
+    _timekeeper_draw_debug_step(&y, renderer, font, update_text, white, red);
+    _timekeeper_draw_debug_step(&y, renderer, font, draw_text, white, purple);
+}
 void destroy_timekeeper(TimeKeeper *keeper){
     free(keeper);
 }

@@ -12,6 +12,7 @@
 #define APP_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "timekeeper.h"
 
@@ -19,6 +20,7 @@
 #define HEIGHT 720
 
 #define MAX_TITLE_LENGTH 200
+#define DEBUG_FONT_SIZE 15
 
 
 typedef struct {
@@ -30,6 +32,10 @@ typedef struct {
     SDL_Renderer *renderer;
 
     TimeKeeper *keeper;
+
+    TTF_Font *debug_font;
+
+
 
     bool continuer;
 } App;

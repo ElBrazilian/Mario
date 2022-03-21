@@ -14,4 +14,5 @@ void handle_events(App *app){
 }
 
 void draw(App *app){
+    
 }
