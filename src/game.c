@@ -1,7 +1,6 @@
 #include "game.h"
 
 void update(App *app){
-
 }
 
 void handle_events(App *app){
@@ -14,5 +13,4 @@ void handle_events(App *app){
 }
 
 void draw(App *app){
-    
 }

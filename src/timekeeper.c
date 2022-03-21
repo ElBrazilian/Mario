@@ -21,12 +21,36 @@ TimeKeeper *create_timekeeper(double targetFPS){
     
     set_timekeeper_framerate(keeper, targetFPS);
 
-    for (int i = 0; i < FPS_NUM_AVERAGES; i++){
+    // FPS AVERAGE
+    for (int i = 0; i < NUM_AVERAGES; i++){
         keeper->last_frame_lengths_array[i] = keeper->target_frame_length;
     }
-    keeper->current_average_index           = 0;
-    keeper->last_frame_lengths_sum          = keeper->target_frame_length * FPS_NUM_AVERAGES;
+    keeper->average_index           = 0;
+    keeper->last_frame_lengths_sum          = keeper->target_frame_length * NUM_AVERAGES;
 
+    // HANDLE EVENTS AVERAGE
+    keeper->average_index = 0;
+    keeper->handle_events_average = 0.;
+    for (int i = 0; i < NUM_AVERAGES; i++){
+        keeper->handle_events_array[i] = keeper->handle_events_average;
+    }
+    keeper->handle_events_sum = NUM_AVERAGES * keeper->handle_events_average;
+    
+    // UPDATE AVERAGE
+    keeper->update_average = 0.;
+    for (int i = 0; i < NUM_AVERAGES; i++){
+        keeper->update_array[i] = keeper->update_average;
+    }
+    keeper->update_sum = NUM_AVERAGES * keeper->update_average;
+
+    // DRAW AVERAGE
+    keeper->draw_average = 7.;
+    for (int i = 0; i < NUM_AVERAGES; i++){
+        keeper->draw_array[i] = keeper->draw_average;
+    }
+    keeper->draw_sum = NUM_AVERAGES * keeper->draw_average;
+
+    keeper->frame_length_average = 7.;
 
     return keeper;
 }
@@ -37,16 +61,36 @@ void set_timekeeper_framerate(TimeKeeper *keeper, double FPS){
 void update_timekeeper_handle(TimeKeeper *keeper){
     keeper->last_handle_events_ticks = SDL_GetTicks();
     keeper->handle_events_time = keeper->last_handle_events_ticks - keeper->last_frame_ticks;
+
+    // Handle events average 
+    keeper->handle_events_sum = keeper->handle_events_sum - keeper->handle_events_array[keeper->average_index] + keeper->handle_events_time;
+    keeper->handle_events_array[keeper->average_index] = keeper->handle_events_time;
+
+    keeper->handle_events_average = keeper->handle_events_sum / NUM_AVERAGES_FL;
 }
 void update_timekeeper_update(TimeKeeper *keeper){
     keeper->last_update_ticks = SDL_GetTicks();
     keeper->update_time = keeper->last_update_ticks - keeper->last_handle_events_ticks;
+
+    // update average 
+    keeper->update_sum = keeper->update_sum - keeper->update_array[keeper->average_index] + keeper->update_time;
+    keeper->update_array[keeper->average_index] = keeper->update_time;
+
+    keeper->update_average = keeper->update_sum / NUM_AVERAGES_FL;
 }
 void update_timekeeper_draw(TimeKeeper *keeper){
     keeper->last_draw_ticks = SDL_GetTicks();
     keeper->draw_time = keeper->last_draw_ticks - keeper->last_update_ticks;
 
+    // draw average 
+    keeper->draw_sum = keeper->draw_sum - keeper->draw_array[keeper->average_index] + keeper->draw_time;
+    keeper->draw_array[keeper->average_index] = keeper->draw_time;
+
+    keeper->draw_average = keeper->draw_sum / NUM_AVERAGES_FL;
+
     keeper->frame_length_raw = keeper->handle_events_time + keeper->update_time + keeper->draw_time;
+    keeper->frame_length_average = keeper->handle_events_average + keeper->update_average + keeper->draw_average;
+
 }
 
 void timekeeper_limit(TimeKeeper *keeper){
@@ -63,11 +107,11 @@ void timekeeper_computeFPS(TimeKeeper *keeper){
     keeper->frame_length = now - keeper->last_frame_ticks;
 
     
-    keeper->last_frame_lengths_sum = keeper->last_frame_lengths_sum - keeper->last_frame_lengths_array[keeper->current_average_index] + keeper->frame_length;
-    keeper->last_frame_lengths_array[keeper->current_average_index] = keeper->frame_length;
-    keeper->current_average_index = (keeper->current_average_index + 1) % FPS_NUM_AVERAGES;
+    keeper->last_frame_lengths_sum = keeper->last_frame_lengths_sum - keeper->last_frame_lengths_array[keeper->average_index] + keeper->frame_length;
+    keeper->last_frame_lengths_array[keeper->average_index] = keeper->frame_length;
+    keeper->average_index = (keeper->average_index + 1) % NUM_AVERAGES;
 
-    keeper->currentFPS = 1000. * FPS_NUM_AVERAGES / ((int) keeper->last_frame_lengths_sum);
+    keeper->currentFPS = 1000. * NUM_AVERAGES / ((int) keeper->last_frame_lengths_sum);
     keeper->last_frame_ticks = now;
 }
 
@@ -88,9 +132,9 @@ void _timekeeper_draw_debug_step(int *y, SDL_Renderer *renderer, TTF_Font *font,
 
     *y += h;
 }
-void _timekeeper_custom_format(char out_text[], char start_text[], Uint32 ms){
-    if ((int)(ms) < 10) sprintf(out_text, " %s %d ", start_text, ms);
-    else sprintf(out_text, " %s%d ", start_text, ms);
+void _timekeeper_custom_format(char out_text[], char start_text[], double ms){
+    if ((int)(ms) < 10) sprintf(out_text, " %s %.2f ", start_text, ms);
+    else sprintf(out_text, " %s%.2f ", start_text, ms);
 }
 void timekeeper_draw_debug_info(TimeKeeper *keeper, SDL_Renderer *renderer, TTF_Font *font){
     // Colors
@@ -107,11 +151,11 @@ void timekeeper_draw_debug_info(TimeKeeper *keeper, SDL_Renderer *renderer, TTF_
     char draw_text[20];
     char handle_text[20];
     char fps_text[20];
-    _timekeeper_custom_format(frame_text,   "FRAME  : "  ,keeper->frame_length_raw);
-    _timekeeper_custom_format(update_text,  "TIME   : "  ,keeper->update_time);
-    _timekeeper_custom_format(draw_text,    "RENDER : "  ,keeper->draw_time);
-    _timekeeper_custom_format(handle_text,  "HANDLE : "  ,keeper->handle_events_time);
-    _timekeeper_custom_format(fps_text,     "FPS    : "  ,(Uint32)keeper->currentFPS);
+    _timekeeper_custom_format(frame_text,   "FRAME  : "  ,keeper->frame_length_average);
+    _timekeeper_custom_format(update_text,  "UPDATE : "  ,keeper->update_average);
+    _timekeeper_custom_format(draw_text,    "RENDER : "  ,keeper->draw_average);
+    _timekeeper_custom_format(handle_text,  "HANDLE : "  ,keeper->handle_events_average);
+    _timekeeper_custom_format(fps_text,     "FPS    : "  ,keeper->currentFPS);
 
     // Drawing
     int y = 0;

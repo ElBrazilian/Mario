@@ -77,6 +77,7 @@ int main(int argc, char *argv[]){
         timekeeper_computeFPS(app->keeper);
 
         //printf("FPS: %f\n", app->keeper->currentFPS);
+        // printf("frame: %d\n", app->keeper->frame_length_raw);
     }
 
 

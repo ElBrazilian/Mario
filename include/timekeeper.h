@@ -14,8 +14,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#define FPS_NUM_AVERAGES 200
-#define FPS_NUM_AVERAGES_FL 200.0
+#define NUM_AVERAGES 500
+#define NUM_AVERAGES_FL 500.0
 
 typedef struct {
     double targetFPS;
@@ -30,14 +30,31 @@ typedef struct {
     Uint32 frame_length;
 
     // FPS computing average
-    Uint32 last_frame_lengths_array[FPS_NUM_AVERAGES];
+    Uint32 last_frame_lengths_array[NUM_AVERAGES];
     Uint32 last_frame_lengths_sum;
-    int current_average_index;
-
     double currentFPS;
-    Uint32 update_time;
-    Uint32 draw_time;
+
+    // frame_length_raw computing average
+    double frame_length_average;
+
     Uint32 handle_events_time;
+    // handle_events_time computing average
+    Uint32 handle_events_array[NUM_AVERAGES];
+    Uint32 handle_events_sum;
+    int average_index;
+    double handle_events_average;
+    
+    Uint32 update_time;
+    // update_time computing average
+    Uint32 update_array[NUM_AVERAGES];
+    Uint32 update_sum;
+    double update_average;
+
+    Uint32 draw_time;
+    // draw_time computing average
+    Uint32 draw_array[NUM_AVERAGES];
+    Uint32 draw_sum;
+    double draw_average;
 } TimeKeeper;
 
 /**
