@@ -4,7 +4,9 @@
         "sdl.h": "c",
         "sdl_main.h": "c",
         "begin_code.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "app.h": "c",
+        "sdl_image.h": "c"
     },
     "C_Cpp.default.includePath": [
         "./include",
