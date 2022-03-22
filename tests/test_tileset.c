@@ -65,12 +65,22 @@ int main(int argc, char *argv[]){
     h = h/4;
     SDL_FreeSurface(img);
 
+    // Load a tileset
+    Tileset *ts = load_tileset(app->renderer, "tiles/blocs.png", 4, 4);
+
+    // force draw to 0 in the 
+    for (int i = 0; i < NUM_AVERAGES; i++){
+        app->keeper->draw_array[i] = 0;
+    }
+    app->keeper->draw_average = 0;
+    app->keeper->draw_sum = 0;
+    app->keeper->draw_time = 0;
+
     while(app->continuer){
         // HANDLING EVENTS
         update_timekeeper_handle(app->keeper);
 
         // UPDATE 
-        update_timekeeper_update(app->keeper);
 
         // DRAW
         SDL_SetRenderDrawColor(app->renderer, 0,0,255,255);
@@ -81,6 +91,9 @@ int main(int argc, char *argv[]){
         
         timekeeper_draw_debug_info(app->keeper, app->renderer, app->debug_font);
         SDL_RenderPresent(app->renderer);
+
+        update_timekeeper_update(app->keeper);
+        draw_tile(ts, 0, 0, 200, 200);
         update_timekeeper_draw(app->keeper);
 
         // DELAY TO STAY AT TARGET FPS
@@ -91,6 +104,8 @@ int main(int argc, char *argv[]){
         // printf("frame: %d\n", app->keeper->frame_length_raw);
     }
 
+    // Destroy the tileset
+    destroy_tileset(ts);
 
     SDL_DestroyTexture(texture);
     // Destroy everything
