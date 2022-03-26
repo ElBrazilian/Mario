@@ -34,12 +34,28 @@ Tileset *load_tileset(SDL_Renderer *renderer, char *filename, int num_tiles_x, i
     return tileset;
 }
 
-void draw_tile(Tileset *tileset, int num_tile_x, int num_tile_y, int pos_x, int pos_y){
-    SDL_Delay(2);
+void draw_tile_in_tileset(Tileset *tileset, int num_tile_x, int num_tile_y, int pos_x, int pos_y){
+    SDL_Rect src = {num_tile_x * tileset->tile_width,num_tile_y*tileset->tile_height,tileset->tile_width,tileset->tile_height};
+    SDL_Rect dst = {pos_x,pos_y,tileset->tile_width,tileset->tile_height};
+    SDL_RenderCopy(tileset->renderer, tileset->texture, &src, &dst);
 }
-
 
 void destroy_tileset(Tileset *tileset){
     SDL_DestroyTexture(tileset->texture);
     free(tileset);
+}
+
+Tile *create_tile_from_tileset(Tileset *tileset, int num_tile_x, int num_tile_y){
+    Tile *tile = malloc(sizeof(Tile));
+    tile->p_tileset     = tileset;
+    tile->num_tile_x    = num_tile_x;
+    tile->num_tile_y    = num_tile_y;
+}
+
+void draw_tile(Tile *tile, int pos_x, int pos_y){
+    draw_tile_in_tileset(tile->p_tileset, tile->num_tile_x, tile->num_tile_y, pos_x, pos_y);
+}
+
+void destroy_tile(Tile *tile){
+    free(tile);
 }

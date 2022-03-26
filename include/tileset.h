@@ -27,6 +27,12 @@ typedef struct {
     // int total_sprites;              // Useless ? 
 } Tileset;
 
+typedef struct { // This structure can be used to keep a specific part of the tileset in a specific variable, for instance you could keep a grass block from a tileset variable ts in a "grass" tile
+    Tileset *p_tileset; // A pointer to the current 
+    int num_tile_x, num_tile_y;
+} Tile;
+
+
 /**
  * @brief Loads a tileset in the memory
  * 
@@ -48,7 +54,7 @@ Tileset *load_tileset(SDL_Renderer *renderer, char *filename, int num_tiles_x, i
  * @param pos_x 
  * @param pos_y 
  */
-void draw_tile(Tileset *tileset, int num_tile_x, int num_tile_y, int pos_x, int pos_y);
+void draw_tile_in_tileset(Tileset *tileset, int num_tile_x, int num_tile_y, int pos_x, int pos_y);
 
 /**
  * @brief Removes the tileset from memory
@@ -57,5 +63,31 @@ void draw_tile(Tileset *tileset, int num_tile_x, int num_tile_y, int pos_x, int 
  */
 void destroy_tileset(Tileset *tileset);
 
+
+/**
+ * @brief Create a tile from tileset object
+ * 
+ * @param tileset a pointer to an existing tileset
+ * @param num_tile_x col number in the tileset for the current tile
+ * @param num_tile_y row number in the tileset for the current tile
+ * @return Tile* 
+ */
+Tile *create_tile_from_tileset(Tileset *tileset, int num_tile_x, int num_tile_y);
+
+/**
+ * @brief Draws a specif tile on the screen at pos (pos_x, pos_y)
+ * 
+ * @param tile 
+ * @param pos_x 
+ * @param pos_y 
+ */
+void draw_tile(Tile *tile, int pos_x, int pos_y);
+
+/**
+ * @brief Removes a tile from memory
+ * 
+ * @param tile 
+ */
+void destroy_tile(Tile *tile);
 
 #endif
